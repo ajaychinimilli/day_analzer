@@ -1,0 +1,108 @@
+import csv
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Function to save user data to CSV using pandas
+def save_to_csv(name, sleep, study, work, classes, mobile, essential, remaining):
+    file_name = "day_analysis_data.csv"
+    file_exists = os.path.isfile(file_name)
+    
+    # Data to save into the CSV
+    data = {
+        "Name": [name],
+        "Sleep Hours": [sleep],
+        "Study Hours": [study],
+        "Work Hours": [work],
+        "Class Hours": [classes],
+        "Mobile Hours": [mobile],
+        "Essential Hours": [essential],
+        "Remaining Hours": [remaining]
+    }
+
+    # Create DataFrame
+    df = pd.DataFrame(data)
+
+    if not file_exists:
+        df.to_csv(file_name, mode='w', header=True, index=False)
+    else:
+        df.to_csv(file_name, mode='a', header=False, index=False)
+    
+    print("\n Your data has been saved successfully!\n")
+
+# Function to get valid numeric input within a range
+def get_valid_input(prompt, min_val=0, max_val=24):
+    while True:
+        try:
+            value = int(input(prompt))
+            if min_val <= value <= max_val:
+                return value
+            else:
+                print(f"Please enter a valid number between {min_val} and {max_val}.")
+        except ValueError:
+            print("Invalid input! Please enter a numeric value.")
+
+# Collect user data
+name = input("Your good Name?: ").strip().title()
+print(f"\nHii {name}! Let's analyze your daily activities.\n")
+
+while True:
+    sleep_hours = get_valid_input(f"{name}, how many hours do you sleep on average: ")
+    study_hours = get_valid_input(f"{name}, how many hours do you study on average each day: ")
+    
+    part_time_job = input(f"{name}, do you have a part-time job? (yes/no): ").strip().lower()
+    work_hours = get_valid_input("How many hours do you work per day?: ") if part_time_job in ["yes", "y"] else 0
+    
+    daily_classes = input(f"{name}, do you have daily college/school classes? (yes/no): ").strip().lower()
+    class_hours = get_valid_input("How many hours do you attend classes per day?: ") if daily_classes in ["yes", "y"] else 0
+    
+    mobile_hours = get_valid_input(f"{name}, how many hours do you spend on mobile for entertainment?: ")
+    essential_hours = 2  # Default time for eating, bathing, and getting ready
+
+    total_hours = sleep_hours + study_hours + work_hours + class_hours + mobile_hours + essential_hours
+    
+    if total_hours > 24:
+        print(f"\n⚠️ *Total Time Exceeds 24 Hours!* You entered {total_hours} hours, which is {total_hours - 24} extra hours.")
+        print("🔄 Please enter again correctly.\n")
+    else:
+        break
+
+# Calculate remaining hours
+remaining_hours = 24 - total_hours
+
+# Save the data
+save_to_csv(name, sleep_hours, study_hours, work_hours, class_hours, mobile_hours, essential_hours, remaining_hours)
+
+# Creating a dictionary for visualization
+activities = {
+    "Sleep": sleep_hours,
+    "Study": study_hours,
+    "Work": work_hours,
+    "Classes": class_hours,
+    "Mobile": mobile_hours,
+    "Essentials": essential_hours,
+    "Remaining": remaining_hours  # Adding remaining hours
+}
+
+# Sorting activities by time spent (highest to lowest)
+sorted_activities = sorted(activities.items(), key=lambda x: x[1], reverse=True)
+
+# Extracting keys and values for visualization
+activity_labels, activity_hours = zip(*sorted_activities)
+
+# Bar Chart Visualization
+plt.figure(figsize=(8, 5))
+plt.bar(activity_labels, activity_hours, color=['blue', 'green', 'red', 'purple', 'orange', 'gray', 'lightgray'])
+plt.xlabel("Activities")
+plt.ylabel("Hours Spent")
+plt.title(f"{name}'s Daily Activity Analysis")
+plt.xticks(rotation=20)
+plt.show()
+
+# Pie Chart Visualization
+plt.figure(figsize=(7, 7))
+plt.pie(activity_hours, labels=activity_labels, autopct='%1.1f%%', colors=['blue', 'green', 'red', 'purple', 'orange', 'gray', 'lightgray'])
+plt.title(f"{name}'s Daily Activity Distribution")
+plt.show()
+
+print("\n Keep managing your time wisely and stay productive!")
