@@ -62,8 +62,8 @@ while True:
     total_hours = sleep_hours + study_hours + work_hours + class_hours + mobile_hours + essential_hours
     
     if total_hours > 24:
-        print(f"\n⚠️ *Total Time Exceeds 24 Hours!* You entered {total_hours} hours, which is {total_hours - 24} extra hours.")
-        print("🔄 Please enter again correctly.\n")
+        print(f"\n *Total Time Exceeds 24 Hours!* You entered {total_hours} hours, which is {total_hours - 24} extra hours.")
+        print(" Please enter again correctly.\n")
     else:
         break
 
